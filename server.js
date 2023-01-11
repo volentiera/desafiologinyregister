@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const routeProducts = require('./routes/productRoutes')
 const routeLogin = require('./routes/loginRoute')
 const routeRegister = require('./routes/registerRoute')
+const routeLogout = require('./routes/logoutRoute')
 const path = require('path');
 const { Server: IOServer } = require('socket.io')
 const http = require('http');
@@ -49,6 +50,7 @@ app.set('view engine', 'ejs');
 app.use(routeProducts)
 app.use(routeLogin)
 app.use(routeRegister)
+app.use(routeLogout)
 
 app.get('/', (req , res)=>{
     res.redirect('/login')

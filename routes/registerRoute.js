@@ -3,6 +3,10 @@ const router = Router();
 
 const MongoAtlasConnnection = require('../config/mongooseConnectionAtlas')
 const loginAccess = new MongoAtlasConnnection()
+
+const passport = require('passport');
+const { Strategy: LocalStrategy } = require('passport-local');
+
 router.get('/register', async(req,res)=>{
     res.render('registerPage.ejs')
 })

@@ -34,16 +34,6 @@ router.post('/login', async(req,res)=>{
     req.session.user = user
     res.redirect('/api/productos')
     
-    // passport.use('login', new LocalStrategy((email, password, done) => {
-    //     const user = login.find(u => u.email === email)
-    //     if (!user) {
-    //         return done(null, false)
-    //     }
-    //     if (user.password !== password) {
-    //         return done(null, false)
-    //     }
-    //     return (done(null, user), res.redirect('/api/productos'))
-    // }));
 })
 
 
