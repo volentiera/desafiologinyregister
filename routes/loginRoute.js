@@ -3,8 +3,6 @@ const {Router} = require('express');
 const router = Router();
 const MongoStore = require('connect-mongo')
 const advancedOptions = {useNewUrlParser: true, useUnifiedTopology: true}
-const passport = require('passport');
-const { Strategy: LocalStrategy } = require('passport-local');
 
 const MongoAtlasConnnection = require('../config/mongooseConnectionAtlas')
 const loginAccess = new MongoAtlasConnnection()
@@ -16,24 +14,46 @@ router.use(session({
     resave: false,
     saveUninitialized: false
 }))
+async function getLogin(){
+    const login = await loginAccess.getLogin()
+    return login
+}
+
+const passport = require('passport');
+const { Strategy: LocalStrategy } = require('passport-local');
+
+passport.use('login', new LocalStrategy(async (username, password, done) => {
+    const login = await getLogin()
+    const user = login.find(u => u.email === username)
+    if (!user) {
+        return done(null, false)
+    }
+    if (user.password !== password) {
+        return done(null, false)
+    }
+    return done(null, user)
+}))
+passport.serializeUser(function (user, done){
+    done(null, user.username)
+})
+passport.deserializeUser(async function (username,done){
+    const user = await getLogin()
+    const userSelected = user.find(u=>u.email === username)
+    done(null, userSelected)
+})
+
+router.use(passport.initialize())
+router.use(passport.session())
 
 
 router.get('/login', async (req, res) => {
     res.render('loginPage.ejs')
 });
 
-router.post('/login', async(req,res)=>{
-    const {email, password} = req.body
-    const login = await loginAccess.getLogin()
-    const user = login.find(u => u.email === email && u.password === password)
+router.post('/login', passport.authenticate('login', {failureRedirect: '/failedlogin', successRedirect: '/api/productos'}))
 
-    if (!user){
-        return res.json('no existe')
-    }
-
-    req.session.user = user
-    res.redirect('/api/productos')
-    
+router.get('/failedlogin',(req, res)=>{
+    res.json('error')
 })
 
 

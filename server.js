@@ -52,8 +52,15 @@ app.use(routeLogin)
 app.use(routeRegister)
 app.use(routeLogout)
 
-app.get('/', (req , res)=>{
-    res.redirect('/login')
+const isAuth = (req, res, next)=>{
+    if (req.isAuthenticated()){
+            next()
+    }else{
+            res.redirect('/login')
+    }
+}
+app.get('/', isAuth, (req , res)=>{
+    res.redirect('/api/productos')
 })
 
 io.on('connection', async (socket) => {

@@ -4,7 +4,7 @@ const router = Router();
 
 
 router.get('/logout',(req,res)=>{
-    req.session.destroy()
+    req.logOut()
     res.render('logoutPage.ejs')
 })
 
