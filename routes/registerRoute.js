@@ -6,23 +6,19 @@ const loginAccess = new MongoAtlasConnnection()
 
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
-async function getLogin(){
-    const login = await loginAccess.getLogin()
-    return login
-}
+
 passport.use('register',new LocalStrategy({
     passReqToCallback: true
 },async (req, username, password, done)=>{
-    const user = await getLogin()
-    console.log(user)
-    const userObtained = user.find(u => u.email === username)
+    const user = await loginAccess.getLogin()
+    const userObtained = user.find(u => u.username === username)
     
     if (userObtained){
         return done('usuario registrado')
     }
     const newUser = {
-        email: username,
-        password
+        username: username,
+        password: password
     }
     await loginAccess.insertLogin(newUser)
     return done(null, newUser)
@@ -32,8 +28,8 @@ passport.serializeUser(function (user, done){
     done(null, user.username)
 })
 passport.deserializeUser(async function (username,done){
-    const user = await getLogin()
-    const userSelected = user.find(u=>u.email === username)
+    const user = await loginAccess.getLogin()
+    const userSelected = user.find(u=>u.username === username)
     done(null, userSelected)
 })
 

@@ -5,6 +5,8 @@ const routeProducts = require('./routes/productRoutes')
 const routeLogin = require('./routes/loginRoute')
 const routeRegister = require('./routes/registerRoute')
 const routeLogout = require('./routes/logoutRoute')
+const routeInfo = require('./routes/infoRoute')
+const routeRandom = require('./routes/randomRoute')
 const path = require('path');
 const { Server: IOServer } = require('socket.io')
 const http = require('http');
@@ -23,8 +25,6 @@ const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
 const advancedOptions = {useNewUrlParser: true, useUnifiedTopology: true}
-// const MongoAtlasConnnection = require('./config/mongooseConnectionAtlas')
-// const loginAccess = new MongoAtlasConnnection()
 
 const httpServer = http.createServer(app)
 const io = new IOServer(httpServer)
@@ -51,6 +51,8 @@ app.use(routeProducts)
 app.use(routeLogin)
 app.use(routeRegister)
 app.use(routeLogout)
+app.use(routeInfo)
+app.use(routeRandom)
 
 const isAuth = (req, res, next)=>{
     if (req.isAuthenticated()){

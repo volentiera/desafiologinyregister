@@ -14,17 +14,14 @@ router.use(session({
     resave: false,
     saveUninitialized: false
 }))
-async function getLogin(){
-    const login = await loginAccess.getLogin()
-    return login
-}
+
 
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
 
 passport.use('login', new LocalStrategy(async (username, password, done) => {
-    const login = await getLogin()
-    const user = login.find(u => u.email === username)
+    const login = await loginAccess.getLogin()
+    const user = login.find(u => u.username === username)
     if (!user) {
         return done(null, false)
     }
@@ -37,8 +34,8 @@ passport.serializeUser(function (user, done){
     done(null, user.username)
 })
 passport.deserializeUser(async function (username,done){
-    const user = await getLogin()
-    const userSelected = user.find(u=>u.email === username)
+    const user = await loginAccess.getLogin()
+    const userSelected = user.find(u=>u.username === username)
     done(null, userSelected)
 })
 
@@ -51,6 +48,15 @@ router.get('/login', async (req, res) => {
 });
 
 router.post('/login', passport.authenticate('login', {failureRedirect: '/failedlogin', successRedirect: '/api/productos'}))
+
+const isAuth = (req, res, next)=>{
+    if (req.isAuthenticated()){
+            next()
+    }else{
+            res.redirect('/login')
+    }
+}
+router.get('/api/productos',isAuth)
 
 router.get('/failedlogin',(req, res)=>{
     res.json('error')

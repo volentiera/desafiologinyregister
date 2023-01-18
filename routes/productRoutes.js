@@ -8,15 +8,7 @@ const MongoConnnectionChat = require('../config/mongooseConectionChat')
 const chatAccess = new MongoConnnectionChat()
 
 
-const isAuth = (req, res, next)=>{
-        if (req.isAuthenticated()){
-                next()
-        }else{
-                res.redirect('/login')
-        }
-}
-
-router.get('/api/productos', isAuth, async (req, res) => {
+router.get('/api/productos', async (req, res) => {
         const products = await productsAccess.getProducts()
         const messages = await chatAccess.getMessages()
         const jsScriptMain = 'public/main.js'

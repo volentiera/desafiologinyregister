@@ -4,7 +4,7 @@ const router = Router();
 
 
 router.get('/logout',(req,res)=>{
-    req.logOut()
+    req.logout()
     res.render('logoutPage.ejs')
 })
 
