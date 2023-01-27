@@ -1,39 +1,19 @@
-const mongoose = require('mongoose')
-const { Schema } = mongoose
+const Products = require('../models/modelProducts')
 
-const productsSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    price: {
-        type: Number,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
-    }
-})
-
-class ProductsDAO{
-    productsDAO = mongoose.model('products', productsSchema)
-    async getProducts(){
+const getProducts = async (req,res)=>{
         try {
-            this.connect()
-            const allCarts = await this.productsDAO.find()
+            const allCarts = await Products.find()
             return allCarts
         } catch (error) {
             console.log(error)
         }
     }
-    async insertProduct(product){
+const insertProduct = async (req,res)=>{
         try {
-            this.connect()
-            await this.productsDAO.create(product)
+            await Products.create(req)
         } catch (error) {
             console.log(error)
         }
     }
-}
-module.exports = ProductsDAO
+
+module.exports = {insertProduct, getProducts}

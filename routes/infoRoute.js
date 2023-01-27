@@ -17,7 +17,7 @@ const info = {
     execpath: `Ruta ejecucion del entorno: ${process.execPath.replace(/\\/g, '/')}}`,
     cpus: `Numero cpus: ${nroCPUs}`
 }
-const info2 = [info.args, info.dirname, info.nodeversion , info.processid, info.rss, info.system, info.execpath]
+
 
 router.get('/info', async (req, res) => {
     res.send(info)

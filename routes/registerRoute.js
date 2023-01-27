@@ -1,16 +1,13 @@
 const {Router} = require('express');
 const router = Router();
 
-const MongoAtlasConnnection = require('../config/mongooseConnectionAtlas')
-const loginAccess = new MongoAtlasConnnection()
+const {getLogin, insertLogin} = require('../controllers/login')
 
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
 
-passport.use('register',new LocalStrategy({
-    passReqToCallback: true
-},async (req, username, password, done)=>{
-    const user = await loginAccess.getLogin()
+passport.use('register', new LocalStrategy({passReqToCallback: true},async (req, username, password, done)=>{
+    const user = await getLogin()
     const userObtained = user.find(u => u.username === username)
     
     if (userObtained){
@@ -20,7 +17,7 @@ passport.use('register',new LocalStrategy({
         username: username,
         password: password
     }
-    await loginAccess.insertLogin(newUser)
+    await insertLogin(newUser)
     return done(null, newUser)
 }))
 
@@ -28,7 +25,7 @@ passport.serializeUser(function (user, done){
     done(null, user.username)
 })
 passport.deserializeUser(async function (username,done){
-    const user = await loginAccess.getLogin()
+    const user = await getLogin()
     const userSelected = user.find(u=>u.username === username)
     done(null, userSelected)
 })

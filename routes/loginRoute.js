@@ -1,26 +1,17 @@
 require('dotenv').config()
 const {Router} = require('express');
 const router = Router();
-const MongoStore = require('connect-mongo')
-const advancedOptions = {useNewUrlParser: true, useUnifiedTopology: true}
+const sessionDBConnection = require('../db/sessionDBConnection')
+const {getLogin} = require('../controllers/login')
 
-const MongoAtlasConnnection = require('../config/mongooseConnectionAtlas')
-const loginAccess = new MongoAtlasConnnection()
-
-const session = require('express-session')
-router.use(session({
-    store: MongoStore.create({ mongoUrl: `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@ecommercecoderhousesant.6p5agbc.mongodb.net/sessions?retryWrites=true&w=majority`, mongoOptions: advancedOptions}),
-    secret: 'algo',
-    resave: false,
-    saveUninitialized: false
-}))
+router.use(sessionDBConnection)
 
 
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
 
 passport.use('login', new LocalStrategy(async (username, password, done) => {
-    const login = await loginAccess.getLogin()
+    const login = await getLogin()
     const user = login.find(u => u.username === username)
     if (!user) {
         return done(null, false)
@@ -34,7 +25,7 @@ passport.serializeUser(function (user, done){
     done(null, user.username)
 })
 passport.deserializeUser(async function (username,done){
-    const user = await loginAccess.getLogin()
+    const user = await getLogin()
     const userSelected = user.find(u=>u.username === username)
     done(null, userSelected)
 })

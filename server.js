@@ -26,26 +26,14 @@ if (modo == 'cluster' && cluster.isPrimary) {
     const routeInfo = require('./routes/infoRoute')
     const routeRandom = require('./routes/randomRoute')
     const path = require('path');
-    const {
-        Server: IOServer
-    } = require('socket.io')
+    const {Server: IOServer} = require('socket.io')
     const http = require('http');
     const app = express()
     const PORT = parseInt(process.argv[2]) || 8080
-    const MongoConnnection = require('./config/mongooseConection')
-    const productsAccsess = new MongoConnnection()
-    const MongoConnnectionChat = require('./config/mongooseConectionChat')
-    const chatAccess = new MongoConnnectionChat()
-
-
-
-    const cookieParser = require('cookie-parser')
-    const session = require('express-session')
-    const MongoStore = require('connect-mongo')
-    const advancedOptions = {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    }
+    require('./db/dbConnection')
+    const sessionDBConnection = require('./db/sessionDBConnection')
+    const {getProducts,insertProduct} = require('./controllers/products')
+    const {getMessages,insertMessage} = require('./controllers/messages')
 
     const httpServer = http.createServer(app)
     const io = new IOServer(httpServer)
@@ -56,27 +44,13 @@ if (modo == 'cluster' && cluster.isPrimary) {
         extended: true
     }))
     app.use(express.json())
-    app.use(cookieParser())
 
-    app.use(session({
-        store: MongoStore.create({
-            mongoUrl: `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@ecommercecoderhousesant.6p5agbc.mongodb.net/sessions?retryWrites=true&w=majority`,
-            mongoOptions: advancedOptions
-        }),
-        secret: 'algo',
-        resave: false,
-        saveUninitialized: false
-    }))
-    const STATIC = process.argv[4] == 'STATIC';
+    app.use(sessionDBConnection)
 
-    if(STATIC){
-        app.use(express.static(__dirname + '/public'))
-
-    }
+    app.use(express.static(__dirname + '/public'))
 
     app.set('views', path.join(__dirname, './public/views'));
     app.set('view engine', 'ejs');
-
 
     app.use(routeProducts)
     app.use(routeLogin)
@@ -99,24 +73,24 @@ if (modo == 'cluster' && cluster.isPrimary) {
     io.on('connection', async (socket) => {
         console.log('New user connected. Socket ID : ', socket.id);
 
-        socket.emit('products', await productsAccsess.getProducts());
+        socket.emit('products', await getProducts());
 
         socket.on('update-product', async product => {
 
-            await productsAccsess.insertProduct(product)
-            io.sockets.emit('products', await productsAccsess.getProducts())
+                await insertProduct(product)
+                io.sockets.emit('products', await getProducts())
         })
 
-        socket.emit('messages', await chatAccess.getMessages())
+        socket.emit('messages', await getMessages())
 
         socket.on('update-message', async message => {
-            await chatAccess.insertMessage(message)
-            io.sockets.emit('messages', await chatAccess.getMessages());
+                await insertMessage(message)
+                io.sockets.emit('messages', await getMessages());
         })
         socket.on('disconnect', () => {
-            console.log('User was disconnected');
+                console.log('User was disconnected');
         });
-    })
+})
 
     const server = httpServer.listen(PORT, () =>
         console.log(
