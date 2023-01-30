@@ -6,7 +6,7 @@ const {fork} = require('child_process')
 
 router.get("/api/randoms", (req, res) => {
     const cant = req.query.cant || 10000;
-    const child = fork("./getRandom.js");
+    const child = fork("./utils/getRandom.js");
     child.send(cant);
     child.on("message", (msg) => {
         res.send(msg);

@@ -3,6 +3,7 @@ const {Router} = require('express');
 const router = Router();
 const sessionDBConnection = require('../db/sessionDBConnection')
 const {getLogin} = require('../controllers/login')
+const isAuth = require("../utils/auth")
 
 router.use(sessionDBConnection)
 
@@ -40,13 +41,6 @@ router.get('/login', async (req, res) => {
 
 router.post('/login', passport.authenticate('login', {failureRedirect: '/failedlogin', successRedirect: '/api/productos'}))
 
-const isAuth = (req, res, next)=>{
-    if (req.isAuthenticated()){
-            next()
-    }else{
-            res.redirect('/login')
-    }
-}
 router.get('/api/productos',isAuth)
 
 router.get('/failedlogin',(req, res)=>{
