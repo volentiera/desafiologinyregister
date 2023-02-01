@@ -3,7 +3,7 @@ const {Router} = require('express');
 const router = Router();
 const sessionDBConnection = require('../db/sessionDBConnection')
 const {getLogin} = require('../controllers/login')
-const isAuth = require("../utils/auth")
+
 
 router.use(sessionDBConnection)
 
@@ -11,7 +11,7 @@ router.use(sessionDBConnection)
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
 
-passport.use('login', new LocalStrategy(async (username, password, done) => {
+passport.use('local', new LocalStrategy(async (username, password, done) => {
     const login = await getLogin()
     const user = login.find(u => u.username === username)
     if (!user) {
@@ -35,13 +35,17 @@ router.use(passport.initialize())
 router.use(passport.session())
 
 
-router.get('/login', async (req, res) => {
-    res.render('loginPage.ejs')
+router.get('/', async (req, res) => {
+    if (req.isAuthenticated()){
+        res.redirect('/api/productos')
+    }else{
+        res.render('loginPage.ejs')
+    }
+    
 });
 
-router.post('/login', passport.authenticate('login', {failureRedirect: '/failedlogin', successRedirect: '/api/productos'}))
+router.post('/', passport.authenticate('local', {failureRedirect: '/failedlogin', successRedirect: '/api/productos'}))
 
-router.get('/api/productos',isAuth)
 
 router.get('/failedlogin',(req, res)=>{
     res.json('error')

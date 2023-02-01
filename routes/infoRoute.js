@@ -2,6 +2,9 @@
 const {Router} = require('express');
 const router = Router();
 const os = require('os')
+const compression = require('compression');
+const logger = require('../utils/logger')
+
 
 //para mostrar argumentos ejecutar: nodemon server.js <arg1> <arg2> <arg3>
 const args = process.argv.slice(2);
@@ -18,10 +21,18 @@ const info = {
     cpus: `Numero cpus: ${nroCPUs}`
 }
 
-
-router.get('/info', async (req, res) => {
+//http://localhost/info/not-compress
+router.get('/not-compress', async (req, res) => {
+    console.log("hollllllaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    logger.info("Route: /info/not-compress Method: GET ")
     res.send(info)
 })
+//http://localhost/info/compress
+router.get('/compress', compression() ,async (req, res)=>{
+    logger.info("Route: /info/compress Method: GET ");
+    res.send(info)
+})
+
 
 
 module.exports = router;

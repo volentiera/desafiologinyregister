@@ -1,14 +1,3 @@
-console.log("Child Process created", process.pid);
-
-process.on("message", (msg) => {
-    console.log("Child Process received message", msg);
-    const result = getRandom(msg);
-    process.send(result);
-
-    setTimeout(() => {
-        process.exit();
-    }, 5000);
-});
 
 function getRandom(cant) {
     const numeros = [];
@@ -23,4 +12,4 @@ function getRandom(cant) {
     return contador;
 }
 
-module.exports = getRandom()
+module.exports = {getRandom}

@@ -23,12 +23,7 @@ if (modo == 'cluster' && cluster.isPrimary) {
 
     const morgan = require('morgan');
 
-    const routeProducts = require('./routes/productRoutes')
-    const routeLogin = require('./routes/loginRoute')
-    const routeRegister = require('./routes/registerRoute')
-    const routeLogout = require('./routes/logoutRoute')
-    const routeInfo = require('./routes/infoRoute')
-    const routeRandom = require('./routes/randomRoute')
+    const routes = require('./routes/index')
 
     const path = require('path');
 
@@ -47,7 +42,6 @@ if (modo == 'cluster' && cluster.isPrimary) {
     const {getProducts, insertProduct} = require('./controllers/products')
     const {getMessages, insertMessage} = require('./controllers/messages')
 
-    const isAuth = require("./utils/auth")
 
     //middlewares
 
@@ -64,18 +58,12 @@ if (modo == 'cluster' && cluster.isPrimary) {
     app.set('views', path.join(__dirname, './public/views'));
     app.set('view engine', 'ejs');
 
+
     //rutas
-    app.use(routeProducts)
-    app.use(routeLogin)
-    app.use(routeRegister)
-    app.use(routeLogout)
-    app.use(routeInfo)
-    app.use(routeRandom)
+
+    app.use(routes)
 
 
-    app.get('/', isAuth, (req, res) => {
-        res.redirect('/api/productos')
-    })
 
     //socket
     io.on('connection', async (socket) => {

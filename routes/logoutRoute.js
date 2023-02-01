@@ -3,9 +3,10 @@ const router = Router();
 
 
 
-router.get('/logout',(req,res)=>{
+router.get('/',(req,res)=>{
+    req.session.destroy()
     req.logout()
-    res.render('logoutPage.ejs')
+    res.redirect('/')
 })
 
 

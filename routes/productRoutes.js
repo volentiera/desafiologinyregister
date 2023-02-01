@@ -7,15 +7,12 @@ const {getMessages} = require('../controllers/messages');
 
 
 
-
-router.get('/api/productos', async  (req, res) => {
+router.get('/', async  (req, res) => {
         const products = await getProducts()
         const messages = await getMessages()
         const jsScriptMain = 'public/main.js'
         return res.render('index', {products, messages, jsScriptMain });
-        
 })
-
 
 
 

@@ -35,10 +35,10 @@ router.use(passport.session())
 
 
 
-router.get('/register', async(req,res)=>{
+router.get('/', async(req,res)=>{
     res.render('registerPage.ejs')
 })
-router.post('/register', passport.authenticate('register',{failureRedirect: '/failedregister', successRedirect:'/'}));
+router.post('/', passport.authenticate('register',{failureRedirect: '/failedregister', successRedirect:'/'}));
 
 router.get('/failedregister',(req, res)=>{
     res.json('error')
