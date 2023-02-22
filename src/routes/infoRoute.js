@@ -23,7 +23,6 @@ const info = {
 
 //http://localhost/info/not-compress
 router.get('/not-compress', async (req, res) => {
-    console.log("hollllllaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     logger.info("Route: /info/not-compress Method: GET ")
     res.send(info)
 })

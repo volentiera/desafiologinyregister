@@ -1,17 +1,18 @@
 
-const {Router} = require('express');
-const isAuth = require('../utils/auth');
+const {Router} = require('express')
+const isAuth = require('../utils/auth')
 const logger = require('../utils/logger')
+const passport = require('passport')
 
+const router = Router()
 
-const router = Router();
 const routeProducts = require('./productRoutes')
 const routeLogin = require('./loginRoute')
 const routeRegister = require('./registerRoute')
 const routeLogout = require('./logoutRoute')
 const routeInfo = require('./infoRoute')
 const routeRandom = require('./randomRoute')
-const passport = require('passport');
+
 
 
 
